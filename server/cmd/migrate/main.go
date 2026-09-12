@@ -1,3 +1,6 @@
+// Command migrate is a small CLI entrypoint that applies all pending
+// golang-migrate migrations from the migrations directory against the
+// database configured via HOOKWAVE_DATABASE_CONNECTION_STRING.
 package main
 
 import (
@@ -9,7 +12,7 @@ import (
 )
 
 func main() {
-	serverConfig := config.NewServerConfig()
+	serverConfig := config.New()
 	if err := serverConfig.Load(); err != nil {
 		fmt.Fprintf(os.Stderr, "config loading failed: %v\n", err)
 		os.Exit(1)
