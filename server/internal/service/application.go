@@ -138,10 +138,10 @@ func (s *ApplicationService) UpdateApplicationByID(ctx context.Context, args *Up
 		ID:            application.ID,
 		EnvironmentID: application.EnvironmentID,
 	}
-	if args.Name == "" {
+	if args.Name != "" {
 		updateApplicationParams.Name = args.Name
 	}
-	if args.Slug == "" {
+	if args.Slug != "" {
 		updateApplicationParams.Slug = args.Slug
 	}
 	application, err = s.repository.UpdateApplicationById(ctx, updateApplicationParams)

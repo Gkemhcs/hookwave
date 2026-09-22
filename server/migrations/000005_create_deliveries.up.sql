@@ -22,3 +22,5 @@ CREATE TABLE deliveries (
 CREATE INDEX idx_deliveries_claim
     ON deliveries (next_attempt_at, locked_until)
     WHERE status = 'pending';
+
+

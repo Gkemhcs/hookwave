@@ -22,7 +22,7 @@ type EnvironmentService interface {
 	CreateEnvironment(ctx context.Context, arg *service.CreateEnvironmentParams) (*domain.Environment, error)
 	DeleteEnvironment(ctx context.Context, arg *service.DeleteEnvironmentParams) error
 	ListEnvironments(ctx context.Context) ([]domain.Environment, error)
-	GetEnvironmentByID(ctx context.Context, environmentID string) (*domain.Environment, error)
+	GetEnvironmentByID(ctx context.Context, environmentID uuid.UUID) (*domain.Environment, error)
 }
 
 // EnvironmentHandler handles the /environments HTTP routes.
@@ -141,11 +141,16 @@ func (h *EnvironmentHandler) ListEnvironments(w http.ResponseWriter, r *http.Req
 
 }
 
-// ListEnvironmentById handles GET /environments/{id}.
-func (h *EnvironmentHandler) ListEnvironmentById(w http.ResponseWriter, r *http.Request) {
+// GetEnvironmentById handles GET /environments/{id}.
+func (h *EnvironmentHandler) GetEnvironmentById(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger, _ := httpctx.LoggerFromContext(ctx)
-	environmentId := r.PathValue("id")
+	environmentId, err := uuid.Parse(r.PathValue("id"))
+	if err != nil {
+		logger.Warn("environment id is missing or invalid uuid in url path", tag.NewTagError(err))
+		writeErrorResponse(http.StatusBadRequest, w, "BAD_REQUEST", "environment id is missing or invalid")
+		return
+	}
 	environment, err := h.svc.GetEnvironmentByID(ctx, environmentId)
 	if err != nil {
 		if errors.Is(err, apierror.ErrResourceNotFound) {

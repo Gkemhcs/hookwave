@@ -45,7 +45,7 @@ func (h *EndpointHandler) CreateEndpoint(w http.ResponseWriter, r *http.Request)
 	ctx := r.Context()
 	logger, _ := httpctx.LoggerFromContext(ctx)
 
-	var req *dto.CreateEndpointInput
+	var req dto.CreateEndpointInput
 
 	// Decode failure: malformed body - 400.
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -162,7 +162,7 @@ func (h *EndpointHandler) UpdateEndpointByID(w http.ResponseWriter, r *http.Requ
 		writeErrorResponse(http.StatusBadRequest, w, "BAD_REQUEST", "endpoint id is not valid")
 		return
 	}
-	var req *dto.UpdateEndpointByIDInput
+	var req dto.UpdateEndpointByIDInput
 	// Decode failure: malformed body - 400.
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logger.Warn("invalid request body", tag.NewTagError(err))

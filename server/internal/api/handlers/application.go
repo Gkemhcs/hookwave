@@ -43,7 +43,7 @@ func (h *ApplicationHandler) CreateApplication(w http.ResponseWriter, r *http.Re
 	ctx := r.Context()
 	logger, _ := httpctx.LoggerFromContext(ctx)
 
-	var req *dto.CreateApplicationInput
+	var req dto.CreateApplicationInput
 
 	// Decode failure: malformed body - 400.
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -155,7 +155,7 @@ func (h *ApplicationHandler) UpdateApplicationByID(w http.ResponseWriter, r *htt
 		writeErrorResponse(http.StatusBadRequest, w, "BAD_REQUEST", "application id is not valid")
 		return
 	}
-	var req *dto.UpdateApplicationInput
+	var req dto.UpdateApplicationInput
 	// Decode failure: malformed body - 400.
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logger.Warn("invalid request body", tag.NewTagError(err))

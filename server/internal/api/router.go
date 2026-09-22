@@ -21,7 +21,7 @@ func setupEnvironmentRoutes(r *chi.Mux, handler *handlers.EnvironmentHandler) {
 		r.Post("/", handler.CreateEnvironment)
 		r.Get("/", handler.ListEnvironments)
 		r.Delete("/{id}", handler.DeleteEnvironment)
-		r.Get("/{id}", handler.ListEnvironmentById)
+		r.Get("/{id}", handler.GetEnvironmentById)
 	})
 }
 
@@ -51,6 +51,14 @@ func setupEndpointRoutes(r *chi.Mux, handler *handlers.EndpointHandler) {
 	})
 }
 
+// setupMessageRoutes registers the endpoint CRUD routes plus the
+
+func setupMessageRoutes(r *chi.Mux, handler *handlers.MessageHandler) {
+	r.Route("/applications/{application_id}/messages", func(r chi.Router) {
+		r.Post("/send", handler.Send)
+	})
+}
+
 // NewRouter builds the chi router: request-ID/logging/recovery middleware,
 // then every entity's routes.
 func NewRouter(logger *logging.Logger, handlersRegistry *handlers.Handlers) *chi.Mux {
@@ -64,6 +72,7 @@ func NewRouter(logger *logging.Logger, handlersRegistry *handlers.Handlers) *chi
 	setupEnvironmentRoutes(r, handlersRegistry.Environment)
 	setupApplicationRoutes(r, handlersRegistry.Application)
 	setupEndpointRoutes(r, handlersRegistry.Endpoint)
+	setupMessageRoutes(r,handlersRegistry.Message)
 	return r
 
 }

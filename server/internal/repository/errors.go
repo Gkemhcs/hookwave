@@ -24,6 +24,12 @@ func MapError(err error) error {
 		if pgError.Code == "23503" {
 			return apierror.ErrParentNotExist
 		}
+		if pgError.Code == "23502" {
+			return apierror.ErrNotNullViolation
+		}
+		if pgError.Code == "40P01" || pgError.Code == "40001" {
+			return apierror.ErrTransactionConflict
+		}
 	}
 	if errors.Is(err, pgx.ErrNoRows) {
 		return apierror.ErrResourceNotFound

@@ -85,9 +85,9 @@ func (s *EnvironmentService) ListEnvironments(ctx context.Context) ([]domain.Env
 
 }
 
-// GetEnvironmentById returns the environment identified by environmentId.
-func (s *EnvironmentService) GetEnvironmentByID(ctx context.Context, environmentID string) (*domain.Environment, error) {
-	environment, err := s.repository.GetEnvironmentById(ctx, uuid.MustParse(environmentID))
+// GetEnvironmentByID returns the environment identified by environmentId.
+func (s *EnvironmentService) GetEnvironmentByID(ctx context.Context, environmentID uuid.UUID) (*domain.Environment, error) {
+	environment, err := s.repository.GetEnvironmentById(ctx, environmentID)
 	if err != nil {
 		return nil, fmt.Errorf("get environment: %w", repository.MapError(err))
 	}
@@ -97,7 +97,7 @@ func (s *EnvironmentService) GetEnvironmentByID(ctx context.Context, environment
 // toEnvironment converts a repository row into the domain type.
 func toEnvironment(repositoryEnv *repository.Environment) *domain.Environment {
 	return &domain.Environment{
-		Id:        repositoryEnv.ID,
+		ID:        repositoryEnv.ID,
 		Name:      repositoryEnv.Name,
 		Slug:      repositoryEnv.Slug,
 		CreatedAt: repositoryEnv.CreatedAt,

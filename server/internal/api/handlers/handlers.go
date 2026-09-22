@@ -14,20 +14,16 @@ type Handlers struct {
 	Environment *EnvironmentHandler
 	Application *ApplicationHandler
 	Endpoint    *EndpointHandler
+	Message *MessageHandler
 }
 
 // NewHandlers builds a Handlers registry from already-constructed services.
-func NewHandlers(environmentSvc EnvironmentService, applicationSvc ApplicationService, endpointSvc EndpointService) *Handlers {
+func NewHandlers(environmentSvc EnvironmentService, applicationSvc ApplicationService, endpointSvc EndpointService,messageSvc MessageService) *Handlers {
 	return &Handlers{
-		Environment: &EnvironmentHandler{
-			svc: environmentSvc,
-		},
-		Application: &ApplicationHandler{
-			service: applicationSvc,
-		},
-		Endpoint: &EndpointHandler{
-			service: endpointSvc,
-		},
+		Environment: NewEnvironmentHandler(environmentSvc),
+		Application: NewApplicationHandler(applicationSvc),
+		Endpoint: NewEndpointHandler(endpointSvc),
+		Message: NewMessageHandler(messageSvc),
 	}
 }
 

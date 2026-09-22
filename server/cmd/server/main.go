@@ -19,6 +19,7 @@ import (
 	"github.com/Gkemhcs/hookwave/server/internal/platform/logging"
 	"github.com/Gkemhcs/hookwave/server/internal/platform/logging/tag"
 	"github.com/Gkemhcs/hookwave/server/internal/repository"
+	"github.com/Gkemhcs/hookwave/server/internal/transactor"
 )
 
 func main() {
@@ -47,8 +48,8 @@ func main() {
 	hookewaveRepository := repository.New(hookwaveDBClient)
 
 	logger.Info("hookwave starting", tag.NewTag("port", serverConfig.Port))
-
-	server := api.NewServer(logger, serverConfig.Port, hookewaveRepository)
+	transactor:=transactor.New(hookwaveDBClient.Pool,hookewaveRepository)
+	server := api.NewServer(logger, serverConfig.Port, hookewaveRepository,transactor)
 
 	// Run the HTTP server in its own goroutine so the main goroutine stays
 	// free to wait for a shutdown signal below.

@@ -12,7 +12,7 @@ import (
 // Environment is the top-level tenant boundary — every application lives
 // under exactly one environment.
 type Environment struct {
-	Id        uuid.UUID `json:"id"`
+	ID       uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	Slug      string    `json:"slug"`
 	CreatedAt time.Time `json:"created_at"`
@@ -46,4 +46,14 @@ type Endpoint struct {
 	TimeoutMs     int32          `json:"timeout_ms"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
+type Message struct {
+	ID             uuid.UUID         `json:"id"`
+	ApplicationID  uuid.UUID         `json:"application_id"`
+	EventType      string            `json:"event_type"`
+	Payload        map[string]string `json:"payload"`
+	Metadata       map[string]string `json:"metadata"`
+	IdempotencyKey string            `json:"idempotency_key,omitempty"`
+	CreatedAt      time.Time         `json:"created_at"`
 }

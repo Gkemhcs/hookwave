@@ -34,4 +34,9 @@ var (
 	ErrResourceAlreadyExist = NewAPIError("RESOURCE_ALREADY_EXISTS", "resource already exists")
 	ErrResourceNotFound     = NewAPIError("RESOURCE_DOES_NOT_EXIST", "resource doesnt exist")
 	ErrParentNotExist       = NewAPIError("PARENT_RESOURCE_DOES_NOT_EXIST", "parent resource  not exist")
+	// ErrNotNullViolation and ErrTransactionConflict are internal-only:
+	// handlers must never serialize their Code/Message directly to a
+	// client, only use them for errors.Is branching and logging.
+	ErrNotNullViolation    = NewAPIError("NOT_NULL_VIOLATION", "a required value was missing")
+	ErrTransactionConflict = NewAPIError("TRANSACTION_CONFLICT", "transaction conflict, please retry")
 )

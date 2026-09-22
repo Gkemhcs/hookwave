@@ -5,8 +5,11 @@ CREATE TABLE messages (
     payload         JSONB        NOT NULL,
     -- optional metadata for debugging (trace_id, source system etc.)
     metadata        JSONB,
-    -- optional: producers can attach for dedup on consumer side
-    idempotency_key VARCHAR(255),
-    created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-    UNIQUE(application_id, idempotency_key)
+    -- server-generated, consumer-facing dedup token (not producer-supplied,
+    -- not unique-constrained — see idempotency-key discussion)
+    idempotency_key VARCHAR(255) NOT NULL,
+    created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
+
+
+

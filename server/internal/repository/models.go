@@ -113,6 +113,6 @@ type Message struct {
 	EventType      string           `json:"event_type"`
 	Payload        json.RawMessage  `json:"payload"`
 	Metadata       *json.RawMessage `json:"metadata"`
-	IdempotencyKey pgtype.Text      `json:"idempotency_key"`
+	IdempotencyKey string           `json:"idempotency_key"`
 	CreatedAt      time.Time        `json:"created_at"`
 }
