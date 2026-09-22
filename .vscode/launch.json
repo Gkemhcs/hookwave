@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug server",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/server/cmd/server",
+      "cwd": "${workspaceFolder}/server",
+      "env": {}
+    },
+    {
+      "name": "Debug migrate",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/server/cmd/migrate",
+      "cwd": "${workspaceFolder}/server",
+      "env": {}
+    },
+    {
+      "name": "Debug current package (tests)",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "${fileDirname}",
+      "cwd": "${workspaceFolder}/server"
+    },
+    {
+      "name": "Attach to running server (dlv)",
+      "type": "go",
+      "request": "attach",
+      "mode": "local",
+      "processId": "${command:pickProcess}",
+      "cwd": "${workspaceFolder}/server"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+// Command server is Hookwave's main HTTP server entrypoint. It loads
+// configuration, connects to Postgres, wires up the API server, and runs it
+// until SIGINT/SIGTERM triggers a graceful shutdown.
 package main
 
 import (
@@ -13,44 +16,50 @@ import (
 	"github.com/Gkemhcs/hookwave/server/internal/api"
 	"github.com/Gkemhcs/hookwave/server/internal/config"
 	"github.com/Gkemhcs/hookwave/server/internal/db"
-	"github.com/Gkemhcs/hookwave/server/internal/observability"
+	"github.com/Gkemhcs/hookwave/server/internal/platform/logging"
+	"github.com/Gkemhcs/hookwave/server/internal/platform/logging/tag"
+	"github.com/Gkemhcs/hookwave/server/internal/repository"
+	"github.com/Gkemhcs/hookwave/server/internal/transactor"
 )
 
 func main() {
-	serverConfig := config.NewServerConfig()
+	serverConfig := config.New()
 	err := serverConfig.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "config loading failed: %v\n", err)
 		os.Exit(1)
 	}
 
-	logger := observability.NewLogger()
+	logger := logging.New()
 	defer logger.Sync()
 
-	dbClient, err := db.NewHookWaveDBClient(serverConfig.DBConn)
-
+	hookwaveDBClient, err := db.New(serverConfig.DBConn)
 	if err != nil {
-		logger.Fatal("db connection failed", observability.NewTagError(err))
+		logger.Fatal("db connection failed", tag.NewTagError(err))
 	}
-	err = dbClient.Ping()
+	err = hookwaveDBClient.Ping()
 	if err != nil {
-		logger.Fatal("db ping failed", observability.NewTagError(err))
+		logger.Fatal("db ping failed", tag.NewTagError(err))
 	} else {
 		logger.Info("successfully connected to database")
 	}
-	defer dbClient.Close()
+	defer hookwaveDBClient.Close()
 
-	logger.Info("hookwave starting", observability.NewTag("port", serverConfig.Port))
+	hookewaveRepository := repository.New(hookwaveDBClient)
 
-	server := api.NewServer(logger, serverConfig.Port)
+	logger.Info("hookwave starting", tag.NewTag("port", serverConfig.Port))
+	transactor:=transactor.New(hookwaveDBClient.Pool,hookewaveRepository)
+	server := api.NewServer(logger, serverConfig.Port, hookewaveRepository,transactor)
 
+	// Run the HTTP server in its own goroutine so the main goroutine stays
+	// free to wait for a shutdown signal below.
 	go func() {
 		logger.Info("starting server")
 
 		if err := server.ListenAndServe(); err != nil &&
 			err != http.ErrServerClosed {
 
-			logger.Fatal("server failed", observability.NewTagError(err))
+			logger.Fatal("server failed", tag.NewTagError(err))
 		}
 	}()
 
@@ -63,7 +72,7 @@ func main() {
 
 	if err := server.Shutdown(ctx); err != nil {
 		logger.Error("graceful shutdown failed",
-			observability.NewTagError(err),
+			tag.NewTagError(err),
 		)
 	}
 
